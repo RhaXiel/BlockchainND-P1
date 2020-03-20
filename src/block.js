@@ -40,13 +40,14 @@ class Block {
       try {
         // Save in auxiliary variable the current block hash
         const currentHash = self.hash;
+        self.hash = null;
         // Recalculate the hash of the Block
         // Comparing if the hashes changed
         // Returning the Block is not valid
-        resolve(currentHash === SHA256(JSON.stringify(self)));
+        resolve(currentHash === SHA256(JSON.stringify(self)).toString());
         // Returning the Block is valid
       } catch (err) {
-        reject(new Error(err));
+        reject(new Error(err)); 
       }
     });
   }
@@ -64,28 +65,17 @@ class Block {
     // Getting the encoded data saved in the Block
     // Decoding the data to retrieve the JSON representation of the object
     // Parse the data to an object to be retrieve.
-    /*
-    let self = this;
-    return new Promise((resolve, reject) => {
-      try {
-        const data = JSON.parse(hex2ascii(self.body));
-        if (data && self.height > 0) {
-          resolve(data);
-        } else {
-          reject(new Error("Can't resolve data for the genesis block"));
-        }
-      } catch (err) {
-        reject(new Error(err));
-      }
-    });
-    */
-    const data = JSON.parse(hex2ascii(self.body));
-    if (data && self.height > 0) {
-        return data;
-    } else {
-        throw new Error("Can't decode the block data");
-    }
+   let self = this;
+   return new Promise((resolve, reject) => {
+    (self.previousBlockHash) && resolve(null);
     // Resolve with the data if the object isn't the Genesis block
+    try {
+      const data = JSON.parse(hex2ascii(self.body));
+      resolve(data);
+    } catch (error) {
+      reject(new Error("Can't decode the block data"));
+    }
+   });
   }
 }
 
