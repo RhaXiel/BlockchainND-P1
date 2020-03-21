@@ -8,16 +8,16 @@ According to the project requirements, the App has been tested with POSTMAN usin
 
 - must use a POST call to requestValidation
 
-![alt text](images/Get_stars_by_owner.png)
+![alt text](images/Request_validation.png)
 
 - must sign message with your wallet
 
-![alt text](images/Request_validation.png)
+![alt text](images/Sign_message.png)
 
 - must submit your Star
 
-![alt text](images/Sign_message.png)
+![alt text](images/Submit_star.png)
 
 - must use GET call to retrieve starts owned by a particular address
 
-![alt text](images/Submit_star.png)
+![alt text](images/Get_stars_by_owner.png)
