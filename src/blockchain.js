@@ -71,12 +71,12 @@ class Blockchain {
         .toString()
         .slice(0, -3);
       try {
-        if (chainHeight > 0) {
-          newBlock.previousBlockHash = self.chain[chainHeight - 1].hash;
+        if (chainHeight > -1) {
+          newBlock.previousBlockHash = self.chain[chainHeight].hash;
         }
         newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
         self.chain.push(newBlock);
-        self.height = self.chain.length;
+        self.height = newBlock.height; //self.chain.length;
         resolve(newBlock);
       } catch (error) {
         reject(new Error(error));
@@ -178,7 +178,7 @@ class Blockchain {
   getBlockByHeight(height) {
     let self = this;
     return new Promise((resolve, reject) => {
-      let block = self.chain.filter(p => p.height === height)[0];
+      let block = self.chain.find(p => p.height === height);
       if (block) {
         resolve(block);
       } else {
@@ -198,10 +198,11 @@ class Blockchain {
     let stars = [];
     return new Promise((resolve, reject) => {
       try {
-        self.chain.forEach(block => {
-          const data = block.getBData();
+        self.chain.forEach(async block => {
+          //getBlockByHeight
+          const data = await block.getBData();
           if (data) {
-            if (data.owner === address) {
+            if(data.owner === address){
               stars.push(data);
             }
           }
@@ -224,10 +225,19 @@ class Blockchain {
     let errorLog = [];
     return new Promise(async (resolve, reject) => {
       try {
-        self.chain.forEach(block => {
-          const valid = block.validate();
+        self.chain.forEach(async block => {
+          const currentBlock = block;
+          //Check if the block is valid
+          const valid = currentBlock.validate();
           if (!valid) {
-            errorLog.push(data);
+            errorLog.push(currentBlock);
+          }
+          //Check if the block is valid with previousBlock
+          if(currentBlock.previousBlockHash && currentBlock.height>0){
+            const previousBlock = await self.getBlockByHash(currentBlock.previousBlockHash)
+            if(previousBlock.hash !== currentBlock.previousBlockHash){
+              errorLog.push(currentBlock);
+            }
           }
         });
         resolve(errorLog);
