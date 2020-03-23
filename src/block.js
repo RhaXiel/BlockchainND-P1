@@ -40,10 +40,13 @@ class Block {
       try {
         // Save in auxiliary variable the current block hash
         const currentHash = self.hash;
+        self.hash = null;
         // Recalculate the hash of the Block
+        const newHash = SHA256(JSON.stringify(self).toString());
         // Comparing if the hashes changed
+        self.hash = currentHash;
         // Returning the Block is not valid
-        resolve(currentHash === SHA256(JSON.stringify({hash: null, ...self})).toString());
+        resolve(currentHash === newHash);
         // Returning the Block is valid
       } catch (err) {
         reject(new Error(err)); 

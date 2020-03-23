@@ -66,7 +66,7 @@ class Blockchain {
       let newBlock = block;
       const chainHeight = await self.getChainHeight();
       newBlock.height = chainHeight + 1;
-      newBlock.timestamp = new Date()
+      newBlock.time = new Date()
         .getTime()
         .toString()
         .slice(0, -3);
@@ -228,7 +228,7 @@ class Blockchain {
         self.chain.forEach(async block => {
           const currentBlock = block;
           //Check if the block is valid
-          const valid = currentBlock.validate();
+          const valid = await currentBlock.validate();
           if (!valid) {
             errorLog.push(currentBlock);
           }
